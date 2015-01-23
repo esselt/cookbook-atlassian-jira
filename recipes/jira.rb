@@ -80,7 +80,7 @@ template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
 end
 
 execute 'restart-jira' do
-  command './stop-jira.sh && ./start-jira.sh'
+  command './stop-jira.sh > /dev/null && ./start-jira.sh > /dev/null'
   cwd "#{node['atlassian-jira']['jira']['installer_url']}/bin"
   action :nothing
 end
