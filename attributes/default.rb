@@ -31,7 +31,7 @@ default['atlassian-jira']['mysql']['password'] = 'PleaseChangeMe'
 default['atlassian-jira']['mysql']['root_password'] = nil
 default['atlassian-jira']['mysql']['host'] = '127.0.0.1'
 
-default['atlassian-jira']['apache']['hostname'] = node['fqdn']
+default['atlassian-jira']['apache']['hostname'] = nil
 default['atlassian-jira']['apache']['jira_host'] = '127.0.0.1'
 default['atlassian-jira']['apache']['ssl_enable'] = false
 default['atlassian-jira']['apache']['ssl_cert'] = nil
