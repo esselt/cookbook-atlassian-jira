@@ -79,7 +79,7 @@ template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
   notifies :run, 'execute[restart-jira]'
 end
 
-service 'jira' do
+execute 'restart-jira' do
   command './stop-jira.sh && ./start-jira.sh'
   cwd "#{node['atlassian-jira']['jira']['installer_url']}/bin"
   action :nothing
