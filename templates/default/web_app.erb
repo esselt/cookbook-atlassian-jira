@@ -1,5 +1,5 @@
-<VirtualHost *:<%= @params['ssl_enable'] ? '443' : '80' %>>
-    ServerName <%= @params['hostname'] || node['fqdn'] %>
+<VirtualHost *:<%= @params[:ssl_enable] ? '443' : '80' %>>
+    ServerName <%= @params[:hostname] || node['fqdn'] %>
 
     <Location /server-status>
         SetHandler server-status
@@ -9,10 +9,10 @@
         Allow from 127.0.0.1
     </Location>
 
-    <% if @params['ssl_enable'] -%>
+    <% if @params[:ssl_enable] -%>
         SSLProxyEngine On
-        SSLCertificateFile <%= @params['ssl_cert'] %>
-        SSLCertificateKeyFile <%= @params['ssl_key'] %>
+        SSLCertificateFile <%= @params[:ssl_cert] %>
+        SSLCertificateKeyFile <%= @params[:ssl_key] %>
     <% end -%>
 
     <Proxy *>
@@ -21,11 +21,11 @@
     </Proxy>
 
     ProxyRequests Off
-    ProxyPass / ajp://<%= @params['jira_host'] %>:8009/
-    ProxyPassReverse / ajp://<%= @params['jira_host'] %>:8009/
+    ProxyPass / ajp://<%= @params[:jira_host] %>:8009/
+    ProxyPassReverse / ajp://<%= @params[:jira_host] %>:8009/
 </VirtualHost>
 
-<% if @params['ssl_enable'] -%>
+<% if @params[:ssl_enable] -%>
 <VirtualHost *:80>
     RewriteEngine On
     RewriteCond %{HTTPS} off
