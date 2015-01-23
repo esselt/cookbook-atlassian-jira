@@ -17,7 +17,9 @@
 # limitations under the License.
 #
 
-node.set['atlassian-jira']['mysql']['root_password'] = ['atlassian-jira']['mysql']['root_password'] ||= 16.times.map { [*'0'..'9', *'a'..'z', *'A'..'Z'].sample }.join
+unless ['atlassian-jira']['mysql']['root_password']
+  node.set['atlassian-jira']['mysql']['root_password'] = ([nil]*8).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
+end
 
 mysql_service 'default' do
   port '3306'
