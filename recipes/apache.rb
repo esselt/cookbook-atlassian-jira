@@ -34,4 +34,6 @@ web_app node['atlassian-jira']['apache']['hostname'] do
   ssl_enable node['atlassian-jira']['apache']['ssl_enable']
   ssl_cert node['atlassian-jira']['apache']['ssl_cert']
   ssl_key node['atlassian-jira']['apache']['ssl_key']
+
+  enable true
 end
