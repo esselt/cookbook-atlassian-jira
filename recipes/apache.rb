@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: atlassian-jira
-# Recipe:: default
+# Recipe:: apache2
 #
 # Copyright 2015, HiST AITeL
 #
@@ -17,6 +17,21 @@
 # limitations under the License.
 #
 
-%w(atlassian-jira::mysql atlassian-jira::jira atlassian-jira::apache).each do |recipe|
+%w{apache2 apache2::mod_proxy_ajp}.each do |recipe|
   include_recipe recipe
+end
+
+if node['atlassian-jira']['apache']['ssl_enable']
+  include_recipe 'apache2::mod_ssl'
+end
+
+web_app node['atlassian-jira']['apache']['hostname'] do
+  template 'web_app.erb'
+
+  hostname node['atlassian-jira']['apache']['hostname']
+  jira_host node['atlassian-jira']['apache']['jira_host']
+
+  ssl_enable node['atlassian-jira']['apache']['ssl_enable']
+  ssl_cert node['atlassian-jira']['apache']['ssl_cert']
+  ssl_key node['atlassian-jira']['apache']['ssl_key']
 end

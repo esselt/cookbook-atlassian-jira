@@ -1,0 +1,34 @@
+<VirtualHost *:<%= @params['ssl_enable'] ? '443' : '80' %>>
+    ServerName <%= @params['hostname'] %>
+
+    <Location /server-status>
+        SetHandler server-status
+
+        Order Deny,Allow
+        Deny from all
+        Allow from 127.0.0.1
+    </Location>
+
+    <% if @params['ssl_enable'] -%>
+        SSLProxyEngine On
+        SSLCertificateFile <%= @params['ssl_cert'] %>
+        SSLCertificateKeyFile <%= @params['ssl_key'] %>
+    <% end -%>
+
+    <Proxy *>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+
+    ProxyRequests Off
+    ProxyPass / ajp://<%= @params['jira_host'] %>:8009/
+    ProxyPassReverse / ajp://<%= @params['jira_host'] %>:8009/
+</VirtualHost>
+
+<% if @params['ssl_enable'] -%>
+<VirtualHost *:80>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+<% end -%>
