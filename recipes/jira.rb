@@ -63,7 +63,7 @@ execute 'install-jira' do
 end
 
 cookbook_file 'mysql-connector-java-5.1.34.jar' do
-  source "#{node['atlassian-jira']['jira']['installer_url']}/lib/mysql-connector-java-5.1.34.jar"
+  path "#{node['atlassian-jira']['jira']['install_dir']}/lib/mysql-connector-java-5.1.34.jar"
   owner 'root'
   group 'root'
   mode 00644

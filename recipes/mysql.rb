@@ -18,7 +18,7 @@
 #
 
 unless node['atlassian-jira']['mysql']['root_password']
-  node.set['atlassian-jira']['mysql']['root_password'] = ([nil]*8).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
+  node.set['atlassian-jira']['mysql']['root_password'] = ([nil]*24).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
 end
 
 mysql_service 'default' do
