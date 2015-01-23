@@ -18,12 +18,12 @@
 #
 
 group 'jira' do
-  gid directory node['atlassian-jira']['jira']['gid']
+  gid node['atlassian-jira']['jira']['gid']
 end
 
 user 'jira' do
-  uid directory node['atlassian-jira']['jira']['uid']
-  gid directory node['atlassian-jira']['jira']['gid']
+  uid node['atlassian-jira']['jira']['uid']
+  gid node['atlassian-jira']['jira']['gid']
   home node['atlassian-jira']['jira']['data_dir']
   comment 'Atlassian JIRA'
 end
