@@ -50,6 +50,7 @@ remote_file "#{Chef::Config['file_cache_path']}/#{archive_filename}" do
   mode 00744
   action :create_if_missing
   notifies :run, 'execute[extract-jira]'
+  not_if "test -f #{Chef::Config['file_cache_path']}/jira-installed"
 end
 
 execute 'extract-jira' do
@@ -59,8 +60,16 @@ execute 'extract-jira' do
   notifies :run, 'execute[move-jira]'
 end
 
+archive_folder = archive_filename.sub('.tar.gz', '') + '-standalone'
 execute 'move-jira' do
-  command "mv #{archive_filename.slice!('.tar.gz')}-standalone #{node['atlassian-jira']['jira']['install_dir']}"
+  command "mv #{archive_folder}/* #{node['atlassian-jira']['jira']['install_dir']}"
+  cwd Chef::Config['file_cache_path']
+  action :nothing
+  notifies :run, 'execute[cleanup-jira]'
+end
+
+execute 'cleanup-jira' do
+  command "rm -rf #{archive_folder}; rm -rf #{archive_filename}; touch jira-installed"
   cwd Chef::Config['file_cache_path']
   action :nothing
 end
@@ -79,6 +88,7 @@ cookbook_file 'mysql-connector-java-5.1.34.jar' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
+  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/lib"
 end
 
 cookbook_file 'server.xml' do
@@ -87,6 +97,7 @@ cookbook_file 'server.xml' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
+  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/conf"
 end
 
 cookbook_file 'user.sh' do
@@ -95,6 +106,7 @@ cookbook_file 'user.sh' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
+  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/bin"
 end
 
 template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
@@ -113,6 +125,7 @@ template "#{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-IN
   mode 00644
   variables :settings => node['atlassian-jira']['jira']
   notifies :restart, 'service[jira]'
+  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-INF/classes"
 end
 
 service 'jira' do
