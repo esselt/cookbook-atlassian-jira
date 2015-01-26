@@ -88,7 +88,7 @@ cookbook_file 'mysql-connector-java-5.1.34.jar' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
-  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/lib"
+  only_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/lib"
 end
 
 cookbook_file 'server.xml' do
@@ -97,7 +97,7 @@ cookbook_file 'server.xml' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
-  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/conf"
+  only_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/conf"
 end
 
 cookbook_file 'user.sh' do
@@ -106,7 +106,7 @@ cookbook_file 'user.sh' do
   group 'root'
   mode 00644
   notifies :restart, 'service[jira]'
-  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/bin"
+  only_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/bin"
 end
 
 template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
@@ -125,7 +125,7 @@ template "#{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-IN
   mode 00644
   variables :settings => node['atlassian-jira']['jira']
   notifies :restart, 'service[jira]'
-  not_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-INF/classes"
+  only_if "test -d #{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-INF/classes"
 end
 
 service 'jira' do
