@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-default['atlassian-jira']['jira']['installer_url'] = 'http://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-6.3.14-x64.bin'
+default['atlassian-jira']['jira']['archive_url'] = 'http://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-6.3.14-x64.bin'
 default['atlassian-jira']['jira']['http_port'] = 8080
 default['atlassian-jira']['jira']['rmi_port'] = 8005
 default['atlassian-jira']['jira']['data_dir'] = '/var/atlassian/application-data/jira'

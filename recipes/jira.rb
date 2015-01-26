@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+include_recipe 'java::default'
+
 group 'jira' do
   gid node['atlassian-jira']['jira']['gid']
 end
@@ -42,24 +44,33 @@ directory node['atlassian-jira']['jira']['data_dir'] do
   recursive true
 end
 
-template "#{Chef::Config['file_cache_path']}/response.varfile" do
-  source 'response.varfile.erb'
-  mode 00600
-  variables :settings => node['atlassian-jira']['jira']
-end
-
-installer_filename = ::File.basename(node['atlassian-jira']['jira']['installer_url'])
-remote_file "#{Chef::Config['file_cache_path']}/#{installer_filename}" do
-  source node['atlassian-jira']['jira']['installer_url']
+archive_filename = ::File.basename(node['atlassian-jira']['jira']['archive_url'])
+remote_file "#{Chef::Config['file_cache_path']}/#{archive_filename}" do
+  source node['atlassian-jira']['jira']['archive_url']
   mode 00744
   action :create_if_missing
-  notifies :run, 'execute[install-jira]'
+  notifies :run, 'execute[extract-jira]'
 end
 
-execute 'install-jira' do
-  command "./#{installer_filename} -q -varfile response.varfile"
+execute 'extract-jira' do
+  command "tar zxf #{archive_filename}"
   cwd Chef::Config['file_cache_path']
   action :nothing
+  notifies :run, 'execute[move-jira]'
+end
+
+execute 'move-jira' do
+  command "mv #{archive_filename.slice!('.tar.gz')}-standalone #{node['atlassian-jira']['jira']['install_dir']}"
+  cwd Chef::Config['file_cache_path']
+  action :nothing
+end
+
+template '/etc/init.d/jira' do
+  source 'jira.init.erb'
+  owner 'root'
+  group 'root'
+  mode 00755
+  variables :settings => node['atlassian-jira']['jira']
 end
 
 cookbook_file 'mysql-connector-java-5.1.34.jar' do
@@ -67,7 +78,23 @@ cookbook_file 'mysql-connector-java-5.1.34.jar' do
   owner 'root'
   group 'root'
   mode 00644
-  notifies :run, 'execute[restart-jira]'
+  notifies :restart, 'service[jira]'
+end
+
+cookbook_file 'server.xml' do
+  path "#{node['atlassian-jira']['jira']['install_dir']}/conf/server.xml"
+  owner 'root'
+  group 'root'
+  mode 00644
+  notifies :restart, 'service[jira]'
+end
+
+cookbook_file 'user.sh' do
+  path "#{node['atlassian-jira']['jira']['install_dir']}/bin/user.sh"
+  owner 'root'
+  group 'root'
+  mode 00644
+  notifies :restart, 'service[jira]'
 end
 
 template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
@@ -76,11 +103,19 @@ template "#{node['atlassian-jira']['jira']['data_dir']}/dbconfig.xml" do
   group 'jira'
   mode 00640
   variables :settings => node['atlassian-jira']['mysql']
-  notifies :run, 'execute[restart-jira]'
+  notifies :restart, 'service[jira]'
 end
 
-execute 'restart-jira' do
-  command './stop-jira.sh > /dev/null && ./start-jira.sh > /dev/null'
-  cwd "#{node['atlassian-jira']['jira']['installer_url']}/bin"
+template "#{node['atlassian-jira']['jira']['install_dir']}/atlassian-jira/WEB-INF/classes/jira-application.properties" do
+  source 'jira-application.properties.erb'
+  owner 'root'
+  group 'root'
+  mode 00644
+  variables :settings => node['atlassian-jira']['jira']
+  notifies :restart, 'service[jira]'
+end
+
+service 'jira' do
+  supports [:start, :stop, :restart, :status]
   action :nothing
 end

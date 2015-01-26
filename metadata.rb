@@ -15,6 +15,6 @@ recipe 'atlassian-jira::mysql', 'Installs MySQL database'
   supports os
 end
 
-%w(apache2 mysql database).each do |pkg|
+%w(apache2 mysql database java).each do |pkg|
   depends pkg
 end
