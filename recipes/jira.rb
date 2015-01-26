@@ -96,7 +96,6 @@ execute 'cleanup-jira' do
   command "rm -rf #{archive_folder}; rm -rf #{archive_filename}; touch jira-installed"
   cwd Chef::Config['file_cache_path']
   action :nothing
-  notifies :start, 'service[jira]'
 end
 
 template '/etc/init.d/jira' do
