@@ -48,7 +48,7 @@ archive_filename = ::File.basename(node['atlassian-jira']['jira']['archive_url']
 remote_file "#{Chef::Config['file_cache_path']}/#{archive_filename}" do
   source node['atlassian-jira']['jira']['archive_url']
   mode 00744
-  action :create_if_missing
+  action :create
   notifies :run, 'execute[extract-jira]'
   not_if "test -f #{Chef::Config['file_cache_path']}/jira-installed"
 end
