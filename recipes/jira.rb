@@ -51,6 +51,13 @@ directory 'jira-work-dir' do
   mode 00755
 end
 
+directory 'jira-temp-dir' do
+  path "#{node['atlassian-jira']['jira']['install_dir']}/work"
+  owner 'jira'
+  group 'root'
+  mode 00755
+end
+
 directory node['atlassian-jira']['jira']['data_dir'] do
   owner 'jira'
   group 'jira'
@@ -81,6 +88,7 @@ execute 'move-jira' do
   action :nothing
   notifies :create, 'directory[jira-log-dir]'
   notifies :create, 'directory[jira-work-dir]'
+  notifies :create, 'directory[jira-temp-dir]'
   notifies :run, 'execute[cleanup-jira]'
 end
 
