@@ -37,6 +37,20 @@ directory node['atlassian-jira']['jira']['install_dir'] do
   recursive true
 end
 
+directory 'jira-log-dir' do
+  path "#{node['atlassian-jira']['jira']['install_dir']}/logs"
+  owner 'jira'
+  group 'root'
+  mode 00755
+end
+
+directory 'jira-work-dir' do
+  path "#{node['atlassian-jira']['jira']['install_dir']}/work"
+  owner 'jira'
+  group 'root'
+  mode 00755
+end
+
 directory node['atlassian-jira']['jira']['data_dir'] do
   owner 'jira'
   group 'jira'
@@ -54,7 +68,7 @@ remote_file "#{Chef::Config['file_cache_path']}/#{archive_filename}" do
 end
 
 execute 'extract-jira' do
-  command "tar zxf #{archive_filename}"
+  command "tar --no-same-owner -zxf #{archive_filename}"
   cwd Chef::Config['file_cache_path']
   action :nothing
   notifies :run, 'execute[move-jira]'
@@ -65,6 +79,8 @@ execute 'move-jira' do
   command "mv #{archive_folder}/* #{node['atlassian-jira']['jira']['install_dir']}"
   cwd Chef::Config['file_cache_path']
   action :nothing
+  notifies :create, 'directory[jira-log-dir]'
+  notifies :create, 'directory[jira-work-dir]'
   notifies :run, 'execute[cleanup-jira]'
 end
 
@@ -72,6 +88,7 @@ execute 'cleanup-jira' do
   command "rm -rf #{archive_folder}; rm -rf #{archive_filename}; touch jira-installed"
   cwd Chef::Config['file_cache_path']
   action :nothing
+  notifies :start, 'service[jira]'
 end
 
 template '/etc/init.d/jira' do
