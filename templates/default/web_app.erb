@@ -10,9 +10,10 @@
     </Location>
 
     <% if @params[:ssl_enable] -%>
-        SSLProxyEngine On
-        SSLCertificateFile <%= @params[:ssl_cert] %>
-        SSLCertificateKeyFile <%= @params[:ssl_key] %>
+    SSLEngine On
+    SSLProxyEngine On
+    SSLCertificateFile <%= @params[:ssl_cert] %>
+    SSLCertificateKeyFile <%= @params[:ssl_key] %>
     <% end -%>
 
     <Proxy *>
