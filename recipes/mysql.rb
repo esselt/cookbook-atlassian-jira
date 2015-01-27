@@ -17,24 +17,26 @@
 # limitations under the License.
 #
 
-unless node['atlassian-jira']['mysql']['root_password']
-  node.set['atlassian-jira']['mysql']['root_password'] = ([nil]*24).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
+unless node['mysql']['server_root_password']
+  node.set['mysql']['server_root_password'] = ([nil]*24).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
 end
 
 mysql_service 'default' do
   port '3306'
-  initial_root_password node['atlassian-jira']['mysql']['root_password']
+  initial_root_password node['mysql']['server_root_password']
   action [:create, :start]
 end
 
 mysql_connection = {
   :host => '127.0.0.1',
   :username => 'root',
-  :password => node['atlassian-jira']['mysql']['root_password']
+  :password => node['mysql']['server_root_password']
 }
 
 mysql_database node['atlassian-jira']['mysql']['database'] do
   connection mysql_connection
+  encoding 'utf8'
+  collation 'utf8_bin'
   action :create
 end
 
