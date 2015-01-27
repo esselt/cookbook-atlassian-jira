@@ -59,7 +59,7 @@ directory 'jira-work-dir' do
 end
 
 directory 'jira-temp-dir' do
-  path "#{node['atlassian-jira']['jira']['install_dir']}/work"
+  path "#{node['atlassian-jira']['jira']['install_dir']}/temp"
   owner 'jira'
   group 'root'
   mode 00755
