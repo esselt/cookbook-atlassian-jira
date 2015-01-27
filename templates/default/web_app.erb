@@ -1,5 +1,5 @@
 <VirtualHost *:<%= @params[:ssl_enable] ? '443' : '80' %>>
-    ServerName <%= @params[:hostname] || node['fqdn'] %>
+    ServerName <%= @params[:hostname] %>
 
     <Location /server-status>
         SetHandler server-status
