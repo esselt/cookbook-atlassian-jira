@@ -25,7 +25,7 @@ if node['atlassian-jira']['apache']['ssl_enable']
   include_recipe 'apache2::mod_ssl'
 end
 
-web_app node['atlassian-jira']['apache']['hostname'] ||= node['fqdn'] do
+web_app node['atlassian-jira']['apache']['hostname'] || node['fqdn'] do
   template 'web_app.erb'
 
   hostname node['atlassian-jira']['apache']['hostname']
