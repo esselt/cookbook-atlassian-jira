@@ -4,7 +4,7 @@ maintainer_email 'boye.holden@hist.no'
 license          'Apache 2.0'
 description      'Installs and sets up Atlassian Jira'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '6.3.14'
+version          '6.3.14-1'
 
 recipe 'atlassian-jira::default', 'Installs package'
 recipe 'atlassian-jira::jira', 'Installs Jira'
@@ -15,6 +15,6 @@ recipe 'atlassian-jira::mysql', 'Installs MySQL database'
   supports os
 end
 
-%w(apache2 mysql database java).each do |pkg|
+%w(apache2 mysql database java mysql2_chef_gem).each do |pkg|
   depends pkg
 end

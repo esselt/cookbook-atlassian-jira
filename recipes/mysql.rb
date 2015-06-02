@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+mysql2_chef_gem 'default' do
+  action :install
+end
+
 unless node['mysql']['server_root_password']
   node.set['mysql']['server_root_password'] = ([nil]*24).map { ((48..57).to_a+(65..90).to_a+(97..122).to_a).sample.chr }.join
 end
